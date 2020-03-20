@@ -11,7 +11,25 @@ if __name__ == "__main__":
   soup = BeautifulSoup(page.content, 'html.parser')
   
   search_results = soup.find(id='expo')
-  listings = search_results.find_all('article', class_=compile_regex(r'^ocp-property-search property-\d?.*'))
+  postings = search_results.find_all('article', class_=compile_regex(r'^ocp-property-search property-\d?.*'))
 
-  for posting in listings:
-    print(posting.prettify())
+  parsed_posts = []
+  for post in postings:
+    name = 
+    price = 
+    address = 
+    #commute_time = TODO?
+    move_in = 
+    move_out = 
+    link = 
+
+    parsed_posts.append(f"""
+    Posting name: {name}
+    Rent: {price}
+    Property address: {address}
+    Move-in date: {move_in}
+    Move-out date: {move_out}
+    Link to page: {link}
+    """)
+
+  print(parsed_posts)
