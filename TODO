@@ -1,6 +1,5 @@
 1. Finish the beautiful soup parsing.
+  a. Include navigating to each listing so that commute information can be gathered.
 2. Implement the notification service.
 3. Have a database of already viewed listing so messages are only sent with new listings.
-4. Implement the Google Maps API into the project?
-  a. It is crucial for the above to be done already as you don't want to exceed the free tier.
-  b. Also, include a daily limit in the off chance that och gets fludded.
+  a. Include the database at the start of the parsing process to cut down on procesing.
