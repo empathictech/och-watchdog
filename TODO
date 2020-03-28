@@ -1,4 +1,5 @@
-1. Implement the get_commute method.
-2. Implement the notification service.
-3. Have a database of already viewed listing so messages are only sent with new listings.
-  a. Include the database at the start of the parsing process to cut down on procesing.
+- Automate creating an executable file from the script
+
+- Implement the get_commute method.
+
+- Implement the in_visited method.
