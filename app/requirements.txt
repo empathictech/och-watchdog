@@ -1,3 +1,2 @@
 beautifulsoup4==4.8.2
 requests==2.23.0
-auto-py-to-exe==2.6.6
