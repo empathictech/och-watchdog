@@ -6,10 +6,9 @@
 
 - Implement the in_visited method with a local .csv file
 
-- Setup an automated testing pipeline and PR behavior
-  - Include a CHANGELOG and APP_VERSION
-
 ----- Stretch goals -----
+
+- Setup an automated testing pipeline
 
 - Upgrade the app so that credentials do not need to be read from hidden files
 
