@@ -1,5 +1,14 @@
-- Automate creating an executable file from the script
+* WITH EVERY FEATURE UPDATE, BE SURE TO ALSO UPDATE THE README/DOCUMENTATION *
 
-- Implement the get_commute method.
+- Implement the get_commute method
 
-- Implement the in_visited method.
+- Implement the in_visited method with a local .csv file
+
+- Setup an automated testing pipeline and PR behavior
+- Include a CHANGELOG and APP_VERSION
+
+- Upgrade the app so that credentials do not need to be read from hidden files
+
+- Deploy the app to AWS Lambda
+
+- Update the in_visited method from using a local .csv to using AWS DynamoDB
