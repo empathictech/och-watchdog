@@ -2,6 +2,8 @@ from bs4 import BeautifulSoup
 from requests import get as get_request
 from re import compile as compile_regex
 from argparse import ArgumentParser
+from selenium.webdriver import Firefox
+from selenium.webdriver.firefox.options import Options as web_options
 
 import smtplib, ssl
 
@@ -25,9 +27,34 @@ def send_message(message):
 # the OCH site has the Google Maps API integrated into it, which is great as it means we don't have to pay for it
 # it does require interacting with the page, however
 def get_commute(url):
-  return "Not implemented yet"
+  web_opts = web_options()
+  web_opts.set_headless()
 
-# not implemented yet, need to create a DB of postings already found/viewed
+  browser = Firefox(options=web_opts)
+  browser.get(url)
+
+  # open the map tab
+  browser.find_element_by_id("map_section_tab").click()
+  buttons = browser.find_elements_by_class_name(compile_regex(r"^directions--transit-options clearfix list.*"))
+
+  # gather walking commute info
+  buttons[0].click()
+  
+  walk_distance = browser.find_elements_by_class_name("directions--distance")[0].text.strip()
+  walk_time = browser.find_elements_by_class_name("directions--time")[0].text.strip()
+
+  # gather bicycle commute info
+  buttons[1].click()
+
+  bike_distance = browser.find_elements_by_class_name("directions--distance")[0].text.strip()
+  bike_time = browser.find_elements_by_class_name("directions--time")[0].text.strip()
+
+  browser.close()
+
+  return f"""Walking commute: {walk_distance}, {walk_time}
+Biking commute: {bike_distance}, {bike_time}"""
+
+# not implemented yet, need to create a CSV in env_files that we search for visited names, and/or add new ones
 def in_visited(property_name):
   return False
 
@@ -58,13 +85,13 @@ def collect_information(posting):
   availability = info.find("div", class_="search--listing-extras").text.strip()
   link = "https://ochdatabase.umd.edu" + info.find("div", class_="name").find("a")["href"]
 
-  commute_time = get_commute(link)
+  commute_info = get_commute(link)
 
   return f"""
 Posting name: {name}
 Rent: {price}
 Property address: {address}
-Commute time: {commute_time}
+{commute_info}
 Availability: {availability}
 Link to page: {link}"""
 
