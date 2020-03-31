@@ -1,17 +1,13 @@
 * WITH EVERY FEATURE UPDATE, BE SURE TO ALSO UPDATE THE README/DOCUMENTATION *
 
------ MVP goals -----
-
-- Implement the get_commute method
-
-- Implement the in_visited method with a local .csv file
-
 ----- Stretch goals -----
 
 - Setup an automated testing pipeline
 
 - Upgrade the app so that credentials do not need to be read from hidden files
 
-- Deploy the app to AWS Lambda
+- Dockerize the app and upload it to Docker Hub
+
+- Deploy a lambda to AWS that runs using the docker container
 
 - Update the in_visited method from using a local .csv to using AWS DynamoDB
