@@ -8,11 +8,13 @@ from smtp_driver import send_message
 
 # checks if a property has been visited yet, if not add it to the file
 def in_visited(property_name, is_test):
-  with open("env_files/visited.env", "a+") as visited:
-    if property_name in visited:
+  with open("env_files/visited.env", "r") as visited:
+    if property_name in visited.read():
       return True
-    elif not is_test:
-      visited.write(f"{property_name}\n")
+
+    if not is_test:
+      with open("env_files/visited.env", "a") as visited:
+        visited.write(f"{property_name}\n")
 
   return False
 
