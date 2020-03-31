@@ -6,8 +6,6 @@
 
 - Upgrade the app so that credentials do not need to be read from hidden files
 
-- Dockerize the app and upload it to Docker Hub
-
-- Deploy a lambda to AWS that runs using the docker container
+- Deploy the app to AWS lambda
 
 - Update the in_visited method from using a local .csv to using AWS DynamoDB
