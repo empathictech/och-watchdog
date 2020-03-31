@@ -1,66 +1,23 @@
 from bs4 import BeautifulSoup
 from requests import get as get_request
-from re import compile as compile_regex
 from argparse import ArgumentParser
-from selenium.webdriver import Firefox
-from selenium.webdriver.firefox.options import Options as web_options
+from re import compile as compile_regex
+from props import Property
+from selenium_driver import gather_commutes
+from smtp_driver import send_message
 
-import smtplib, ssl
+# checks if a property has been visited yet, if not add it to the file
+def in_visited(property_name, is_test):
+  with open("env_files/visited.env", "a+") as visited:
+    if property_name in visited:
+      return True
+    elif not is_test:
+      visited.write(f"{property_name}\n")
 
-# sends the accumulated list of postings to and from the emails defined in the credentials.env file
-# for obvious reasons, .env file types are prevented from being committed to git
-def send_message(message):
-  with open("env_files/credentials.env", "r") as env_file:
-    creds = env_file.read().strip().split()
-    recipient = creds[0]
-    sender = creds[1]
-    password = creds[2]
-
-  # default smtp port for GMail
-  port = 465
-  context = ssl.create_default_context()
-
-  with smtplib.SMTP_SSL("smtp.gmail.com", port, context=context) as server:
-    server.login(sender, password)
-    server.sendmail(sender, recipient, message)
-
-# the OCH site has the Google Maps API integrated into it, which is great as it means we don't have to pay for it
-# it does require interacting with the page, however
-def get_commute(url):
-  web_opts = web_options()
-  web_opts.set_headless()
-
-  browser = Firefox(options=web_opts)
-  browser.get(url)
-
-  # open the map tab
-  browser.find_element_by_id("map_section_tab").click()
-  buttons = browser.find_elements_by_class_name(compile_regex(r"^directions--transit-options clearfix list.*"))
-
-  # gather walking commute info
-  buttons[0].click()
-  
-  walk_distance = browser.find_elements_by_class_name("directions--distance")[0].text.strip()
-  walk_time = browser.find_elements_by_class_name("directions--time")[0].text.strip()
-
-  # gather bicycle commute info
-  buttons[1].click()
-
-  bike_distance = browser.find_elements_by_class_name("directions--distance")[0].text.strip()
-  bike_time = browser.find_elements_by_class_name("directions--time")[0].text.strip()
-
-  browser.close()
-
-  return f"""Walking commute: {walk_distance}, {walk_time}
-Biking commute: {bike_distance}, {bike_time}"""
-
-# not implemented yet, need to create a CSV in env_files that we search for visited names, and/or add new ones
-def in_visited(property_name):
   return False
 
 # checks the current posting against a blacklist of property managers that are dorm-style
-# there is of course the chance of blacklisting posts that mention they are near these buildings...
-# but as of right now, and based on the buildings' locations, the risk is worth it
+# there is of course the chance of blacklisting posts that mention these buildings, but it is a worthy risk
 def in_blacklist(property_name):
   black_list = ["UNIVERSITY VIEW", "COMMONS", "COURTYARDS", "LANDMARK", "TERRAPIN ROW", "VARSITY"]
   
@@ -69,58 +26,59 @@ def in_blacklist(property_name):
   else:
     return False
 
-# parses and accumulates all the information we need from the OCH site
-def collect_information(posting):
-  info = posting.find("div", class_="info")
+# creates and populates a Property object from the postings' pages
+def collect_info(post, is_test):
+  info = post.find("div", class_="info")
   
   # name text formatted as "name \n address"
   name = info.find("div", class_="name").text.strip().split("\n")[0]
 
-  if in_blacklist(name) or in_visited(name):
+  if in_blacklist(name) or in_visited(name, is_test):
     return None
 
+  prop = Property(name)
+
   # price text formatted as "price \n per X"
-  price = " ".join(info.find("div", class_="price").text.strip().split())
-  address = info.find("span", class_="address").text.strip()
-  availability = info.find("div", class_="search--listing-extras").text.strip()
-  link = "https://ochdatabase.umd.edu" + info.find("div", class_="name").find("a")["href"]
+  prop.price = " ".join(info.find("div", class_="price").text.strip().split())
+  prop.address = info.find("span", class_="address").text.strip()
+  prop.availability = info.find("div", class_="search--listing-extras").text.strip()
+  prop.link = "https://ochdatabase.umd.edu" + info.find("div", class_="name").find("a")["href"]
 
-  commute_info = get_commute(link)
-
-  return f"""
-Posting name: {name}
-Rent: {price}
-Property address: {address}
-{commute_info}
-Availability: {availability}
-Link to page: {link}"""
+  return prop
 
 if __name__ == "__main__":
   cli_parser = ArgumentParser()
+
   cli_parser.add_argument("--test", "-t", help="Send results to stdout", action="store_true")
+  cli_parser.add_argument("--simple", "-s", help="Do not gather commute info", action="store_true")
+
   cli_args = cli_parser.parse_args()
 
   # sadly, https://ochdatabase.umd.edu/, doesn't have an API, but there is a degree of consistency to search queries and their matching URLs
   # the simplest way forward is to build a search manually and then copy/paste the URL below, as we have done
   url = "https://ochdatabase.umd.edu/property/search?view=grid&sort=default&b%5B0%5D=0&b%5B1%5D=1&per_bed=u&r%5Bmin%5D=600&r%5Bmax%5D=1000&page=1&search_all=&movein-start=0&movein-end=1&o=&distance%5B184%5D=3&distance%5B185%5D=&lastweek=on&has_photo=on&text_search="
   page = get_request(url)
-
   soup = BeautifulSoup(page.content, "html.parser")
   
   search_results = soup.find(id="expo")
   postings = search_results.find_all("article", class_=compile_regex(r"^ocp-property-search property-\d?.*"))
 
   parsed_posts = []
-  for posting in postings:
-    info = collect_information(posting)
+  for post in postings:
+    prop = collect_info(post, cli_args.test)
     
-    if info is not None:
-      parsed_posts.append(info)
+    if prop is not None:
+      parsed_posts.append(prop)
 
-  if parsed_posts:
-    final_message = "\n".join(parsed_posts)
+  if not parsed_posts:
+    final_message = "No new postings found"
   else:
-    final_message = "No new postings found."
+    if not cli_args.simple:
+      gather_commutes(parsed_posts)
+    
+    final_message = ""
+    for prop in parsed_posts:
+      final_message += prop.get_info()
 
   if cli_args.test:
     print(final_message)
