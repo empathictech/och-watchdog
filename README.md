@@ -15,38 +15,30 @@ wherever you would like to store the repo.
 
 The main requirement for running this app is to have selenium setup. If you do not already have selenium setup for Python, the documentation can be found here: https://selenium-python.readthedocs.io/
 
-This app's selenium setup utilizes Mozilla Firefox. 
+This app's selenium setup utilizes Mozilla Firefox, driven by geckodriver: https://github.com/mozilla/geckodriver
 
-Beyond selenium, this app requires several pip packages. To install them, simply run
+This app also requires several pip packages. To install them, simply run
 ```shell
-pip3 install -r app/requirement.txt
+pip3 install -r app/requirements.txt
 ```
 from the repo's base directory.
 
-Now that all the requirements have been seutp, if you want this app to send emails, follow the directions in the next section. If you only wish to print results to stdout, there is nothing left to do.
-
-run
+Your setup is now complete, simply run
 ```shell
-python3 app/app.py --test
+python3 app/app.py
 ```
 from the repo's base directory.
 
 ## Sending emails
 
-To send emails you will need to create a `credentials.env` file in the `/app/env_files/` directory. The app is expecting `credentials.env` to contain this information, verbatim.
+This app's default functionality is to print results to stdout. If you would like to send emails you will need to create a `credentials.env` file in the `app` directory. `credentials.env` should contain this information, verbatim.
 
 ```text
-recipient's email address
-sender's email address
-sender's emai password
+recipient_email_address
+sender_email_address
+sender_email_password
 ```
 
 The sender's email will need to allow less secure access to the account. An explanation on how to set this up can be found here: https://support.google.com/accounts/answer/6010255?hl=en
 
 Notice, the .gitignore file contains `*.env`. While this is not the most elegant solution to avoiding plaintext password leaks, it suffices for a simple app such as this. That being said, in an abundance of caution, please do not use your main GMail account to send emails with this app. Using a seperate account is also receommended due to the requirement of less secure access to the account (above).
-
-The app is ready to go, run
-```shell
-python3 app/app.py
-```
-from the repo's base directory.

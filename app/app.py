@@ -5,15 +5,18 @@ from re import compile as compile_regex
 from props import Property
 from selenium_driver import gather_commutes
 from smtp_driver import send_message
+from os import path, getcwd
 
 # checks if a property has been visited yet, if not add it to the file
 def in_visited(property_name, is_test):
-  with open("env_files/visited.env", "r") as visited:
+  visited_path = getcwd() + "/" + path.dirname(__file__) + "/visited.env"
+  
+  with open(visited_path, "r") as visited:
     if property_name in visited.read():
       return True
 
     if not is_test:
-      with open("env_files/visited.env", "a") as visited:
+      with open(visited_path, "a") as visited:
         visited.write(f"{property_name}\n")
 
   return False
@@ -58,7 +61,7 @@ if __name__ == "__main__":
 
   # sadly, https://ochdatabase.umd.edu/, doesn't have an API, but there is a degree of consistency to search queries and their matching URLs
   # the simplest way forward is to build a search manually and then copy/paste the URL below, as we have done
-  url = "https://ochdatabase.umd.edu/property/search?view=grid&sort=default&b%5B0%5D=0&b%5B1%5D=1&per_bed=u&r%5Bmin%5D=600&r%5Bmax%5D=1100&page=1&search_all=&movein-start=0&movein-end=1&o=&distance%5B184%5D=3&distance%5B185%5D=&lastweek=on&has_photo=on&text_search="
+  url = "https://ochdatabase.umd.edu/housing/price-under+2100"
   page = get_request(url)
   soup = BeautifulSoup(page.content, "html.parser")
   
