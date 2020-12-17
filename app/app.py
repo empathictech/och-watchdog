@@ -5,15 +5,18 @@ from re import compile as compile_regex
 from props import Property
 from selenium_driver import gather_commutes
 from smtp_driver import send_message
+from os import path, getcwd
 
 # checks if a property has been visited yet, if not add it to the file
 def in_visited(property_name, is_test):
-  with open("env_files/visited.env", "r") as visited:
+  visited_path = getcwd() + "/" + path.dirname(__file__) + "/visited.env"
+  
+  with open(visited_path, "r") as visited:
     if property_name in visited.read():
       return True
 
     if not is_test:
-      with open("env_files/visited.env", "a") as visited:
+      with open(visited_path, "a") as visited:
         visited.write(f"{property_name}\n")
 
   return False
