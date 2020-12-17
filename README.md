@@ -19,7 +19,7 @@ This app's selenium setup utilizes Mozilla Firefox, driven by geckodriver: https
 
 This app also requires several pip packages. To install them, simply run
 ```shell
-pip3 install -r app/requirement.txt
+pip3 install -r app/requirements.txt
 ```
 from the repo's base directory.
 
