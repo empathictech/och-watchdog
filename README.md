@@ -31,7 +31,7 @@ from the repo's base directory.
 
 ## Sending emails
 
-This app's default functionality is to print results to stdout. If you would like to send emails you will need to create a `credentials.env` file in the `/app/env_files/` directory. The app is expecting `credentials.env` to contain this information, verbatim.
+This app's default functionality is to print results to stdout. If you would like to send emails you will need to create a `credentials.env` file in the `app` directory. `credentials.env` should contain this information, verbatim.
 
 ```text
 recipient_email_address
