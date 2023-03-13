@@ -51,15 +51,3 @@ sender_email_password
 The sender's email will need to allow less secure access to the account. An explanation on how to set this up can be found here: https://support.google.com/accounts/answer/6010255?hl=en
 
 Notice, the .gitignore file contains `*.env`. While this is not the most elegant solution to avoiding plaintext password leaks, it suffices for a simple app such as this. That being said, in an abundance of caution, please do not use your main GMail account to send emails with this app. Using a seperate account is also receommended due to the requirement of less secure access to the account.
-
-## FAQ
-
-If you have any questions or issues, you might find a solution in the [FAQ](FAQ.md)
-
-## Contributing
-
-If you would like to contribute to {PROJECT_NAME}, please see how in [CONTRIBUTING](CONTRIBUTING.md)
-
-## License
-
-This project is licensed under the terms of the [MIT license](LICENSE.txt).
